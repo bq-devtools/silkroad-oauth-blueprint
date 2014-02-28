@@ -1,0 +1,268 @@
+FORMAT: 1A
+HOST: https://oauth.bqws.io/v1.0/
+
+# OAuth Server (v1.0)
+An user authentication system implemeting the [OAuth2](http://tools.ietf.org/html/rfc6749) protocol.
+
+
+## Authorization request [/oauth/authorize]
+### Get login dialog [GET]
+Request the login page where the users can enter its credentials.
+
+###Parameters###
+|Name|Description|Type|Default|Required
+|----|-----------|----|:-----:|:------:|
+|client_id|The identifier of the client starting the oauth dance. This client_id and client_secret must be issued by the administration of the system .|String||*|
+|response_type|The type of response expected. Currently the only supported value is *code*.|String||*|
+|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||*|
+|state|The state will remain after the redirect|String|||
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|400  |missing_parameter|When one of the requried parameters is misssing.|
+|400  |invalid_response_type|When response_type parameter is invalid.|
+|401   |unauthorized|If the client _id can not be authorized.|
+
+
++ Response 200 (text/html)
+
+        <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+        <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <title>Login BQ</title>
+            <link rel="stylesheet" href="/assets/bootstrap-2.0.2/css/bootstrap.css" />
+            <link rel="stylesheet" href="/assets/awesome-1.0.0/css/font-awesome.css" />
+            <script type="text/javascript" src="/assets/js/jquery-1.7.2.js"></script>
+            <script type="text/javascript"
+            src="/assets/bootstrap-2.0.2/js/bootstrap.js"></script>
+        </head>
+        <body>
+            <div class="container">
+                <div class="row">
+                    <div class="span8">
+                        <form class="form-horizontal" id="registerHere" method="post"
+                                action="/v1.0/oauth/authorize">
+                        <fieldset>
+                        <legend>Login with your BQ identifier and password</legend>
+
+                        <div class="control-group">
+                            <label class="control-label">BQ ID</label>
+                            <div class="controls">
+                                <input type="text" class="input-xlarge" id="username"
+                                name="username" rel="popover"
+                                data-content="Enter your BQ ID."
+                                data-original-title="BQ ID">
+
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Password</label>
+                            <div class="controls">
+                                <input type="password" class="input-xlarge" id="password"
+                                name="password" rel="popover"
+                                data-content="What's your password?"
+                                data-original-title="Password">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="hidden" name="redirect_uri" value="http://iam.int.bqws.io/v1.0/oauth/token" /> 
+                    <input type="hidden" name="response_type" value="CODE" /> 
+                    <input type="hidden" name="state" value="stateless" />
+                    <input type="hidden" name="client_id" value="tempclient" />
+
+                    <div class="control-group">
+                        <label class="control-label"></label>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-success" name="login" id="login">Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+        </body>
+        </html>
+
+
+### Do login [POST]
+Non-web clients (e.g. Android) can submit user credentials directly without using the oauth-server's login dialog. Performing this POST request will be the same as presenting the login dialog to the user and she pressing the login button.
+
+###Parameters###
+|Name|Description|Type|Default|Required|
+|----|-----------|----|:-----:|:------:|
+|username|User's username.|String||*|
+|password|User's password.|String||*|
+|client_id|The identifier of the client starting the oauth dance. This client_id and client_secret must be issued by the administration of the system .|String||*|
+|response_type|The type of response expected. Currently the only supported value is *code*.|String||*|
+|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||*|
+|state|The state will remain after the redirect|String|||
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|400  |missing_parameter|When one of the requried parameters is misssing.|
+|400  |invalid_response_type|When response_type is invalid.|
+|401   |unauthorized|If the user crendentials or client credentials can not be authorized.|
+
++ Response 303
+    
+    + Header
+    
+            Location: {redirect_uri}&code=xxxxxx.xxxxxx
+
+## Access token request [/oauth/token]
+After the client obtains a *code* using the oauth step described above. It can sent it to its backend. The server can the use this endpoint to exchange such *code* for and *access token*.
+
+### Exchange code for access token [POST]
+
+###Parameters###
+|Name|Description|Type|Default|Required
+|----|-----------|----|:-----:|:------:|
+|client_id|The identifier of the client starting the oauth dance. This client_id and client_secret must be issued by the administration of the system .|String||*|
+|client_secret|The secret password of the client.|String||*|
+|grant_type|This must be *authorization_code* |String||*|
+|code|The code obtain form the preivious oauth step.|String||*|
+
+###Response fields###
+|Name|Description|Type|Required|
+|----|-----------|----|:------:|
+|access_token  |Token granted for accessing SilkRoad APIs|String|*|
+|expires_in| Number of seconds until this token expiration|Long|*|
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|400   |missing_parameter|When one of the requried parameters is misssing.|
+|400   |invalid_grant|If the parameter *grant_type* is the expected value.|
+|401   |unauthorized|If the *code* is not valid or the client credentials can not be authorized.|
+
++ Response 200 (application/json)
+
+        { "access_token": "xxxxxx.xxxxxxx", "expires_in": 36000 }
+
+## Users [/user]
+Create new users. Requests must use [Basic HTTP Authentication](http://tools.ietf.org/html/rfc2617#section-2) to provide client_id and client_secret. For example:
+
+<pre style="margin: 22px 22px 22px 22px;">
+    Authorization: Basic xxxxxxxxxxxxx
+</pre>
+
+### Create user [POST]
+Clients can use this endpoint to register new users.
+
+###Parameters###
+The body of the request must contain a Json object with the following fields:
+
+|Name|Description|Type|Required|Restrictions|
+|----|-----------|----|:------:|:-----------|
+|username|Username (case insensitive)|String|*|Can not contain the pipe character|
+|email|Email of the user|String|*|E-mail type|
+|password|User password|String|*|*|
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|422  |invalid_entity|When one json in the body is invalid or does not include the required fields|
+|409  |entity_exists|When a user already exists with the the specified username |
+
+
++ Request
+    
+    + Header
+            
+            Authorization: Basic {access_token}
+
+    + Body
+        
+            { 
+                "username": "alexjdl",
+                "password": "my_secret",
+                "email": "alexander.deleon@bqreaders.com"
+            }
+
+    + Response 201
+
+## User profile [/user/me]
+Magement of user's profile in the oauth-server. All requests to the user enadpoint must include a valid *access token* via the **Authorization** header. For example:
+
+<pre style="margin: 22px 22px 22px 22px;">
+    Authorization: Bearer xxxxxx.xxxxxxx
+</pre>
+
+### Get user  [GET]
+Clients can use this endpoint to read the user information. 
+
+###Response fields###
+|Name|Description|Type|Required|
+|----|-----------|----|:------:|
+|id  |User identifier|String|*|
+|username|Username used by the user to login|String|*|
+|email|Email of the user|String|*|
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {access_token}
+
++ Response 200 (application/json)
+
+        { 
+            "id": "123", 
+            "username": "alexjdl",
+            "email": "alexander.deleon@bqreaders.com"
+        }
+
+### Update user [PUT]
+Clients can use this endpoint to update the user identity information. 
+
+###Parameters###
+The body of the request must contain a Json object including one or more of these fields
+
+|Name|Description|Type|Required|Restrictions|
+|----|-----------|----|--------|-----------|
+|password|The new password of the user|String|*|*|
+|email|The new email of the user|String|*|E-mail type|
+
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request (application/json)
+   
+    + Header
+    
+            Authorization: Basic {access_token}
+
+    + Body
+        
+            { 
+                "email": "new_email@example.com",
+                "password": "new password"
+            }
+
+
++ Response 204
+
+### Delete user [DELETE]
+Clients can use this endpoint to delete the user identity information. 
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {access_token}
+
++ Response 204
