@@ -89,6 +89,8 @@ Request the login page where the users can enter its credentials.
 ### Do login [POST]
 Non-web clients (e.g. Android) can submit user credentials directly without using the oauth-server's login dialog. Performing this POST request will be the same as presenting the login dialog to the user and she pressing the login button.
 
+POST header response return code "location: {redirect_uri}&code=xxxxxx.xxxxxx" 
+
 ###Parameters###
 |Name|Description|Type|Default|Required|
 |----|-----------|----|:-----:|:------:|
@@ -113,10 +115,7 @@ Non-web clients (e.g. Android) can submit user credentials directly without usin
             username=foo1&password=foopass&response_type=code&client_id=temp-client&redirect_uri=http://example.org/&state=apiary
 
 + Response 303
-    
-    + Header
-    
-            Location: http://example.org/?state=apiAry%0A&code=Zm9vMXx0ZW1wLWNsaWVudA.1448dfb2fa0.uTBaR9hP86cpSrtuYlhSnZBfte4
+            
 
 ## Access token request [/v1.0/oauth/token]
 After the client obtains a *code* using the oauth step described above. It can sent it to its backend. The server can the use this endpoint to exchange such *code* for and *access token*.
