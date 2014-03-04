@@ -106,6 +106,12 @@ Non-web clients (e.g. Android) can submit user credentials directly without usin
 |400  |invalid_response_type|When response_type is invalid.|
 |401   |unauthorized|If the user crendentials or client credentials can not be authorized.|
 
++ Request (application/x-www-form-urlencoded)
+
+    + Body
+        
+             username=foo1&password=foopass&response_type=code&client_id=temp-client&redirect_uri=http://example.org/&state=client
+
 + Response 303
     
     + Header
