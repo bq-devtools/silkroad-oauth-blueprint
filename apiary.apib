@@ -1,11 +1,11 @@
 FORMAT: 1A
-HOST: https://oauth.bqws.io/v1.0/
+HOST: https://oauth.bqws.io
 
 # OAuth Server (v1.0)
 An user authentication system implemeting the [OAuth2](http://tools.ietf.org/html/rfc6749) protocol.
 
 
-## Authorization request [/oauth/authorize]
+## Authorization request [/v1.0/oauth/authorize]
 ### Get login dialog [GET]
 Request the login page where the users can enter its credentials.
 
@@ -112,7 +112,7 @@ Non-web clients (e.g. Android) can submit user credentials directly without usin
     
             Location: {redirect_uri}&code=xxxxxx.xxxxxx
 
-## Access token request [/oauth/token]
+## Access token request [/v1.0/oauth/token]
 After the client obtains a *code* using the oauth step described above. It can sent it to its backend. The server can the use this endpoint to exchange such *code* for and *access token*.
 
 ### Exchange code for access token [POST]
@@ -142,7 +142,7 @@ After the client obtains a *code* using the oauth step described above. It can s
 
         { "access_token": "xxxxxx.xxxxxxx", "expires_in": 36000 }
 
-## Users [/user]
+## Users [/v1.0/user]
 Create new users. Requests must use [Basic HTTP Authentication](http://tools.ietf.org/html/rfc2617#section-2) to provide client_id and client_secret. For example:
 
 <pre style="margin: 22px 22px 22px 22px;">
@@ -184,7 +184,7 @@ The body of the request must contain a Json object with the following fields:
 
     + Response 201
 
-## User profile [/user/me]
+## User profile [/v1.0/user/me]
 Magement of user's profile in the oauth-server. All requests to the user enadpoint must include a valid *access token* via the **Authorization** header. For example:
 
 <pre style="margin: 22px 22px 22px 22px;">
