@@ -143,6 +143,15 @@ After the client obtains a *code* using the oauth step described above. It can s
 |400   |invalid_grant|If the parameter *grant_type* is the expected value.|
 |401   |unauthorized|If the *code* is not valid or the client credentials can not be authorized.|
 
+
+
++ Request (application/x-www-form-urlencoded)
+
+    + Body
+        
+            grant_type=authorization_code&code=Zm9vMXx0ZW1wLWNsaWVudA.1448e0a9155.UvgfJ0_epAoXbeU73Gy45GcijzM&client_id=temp-client&client_secret=temp-secret 
+
+
 + Response 200 (application/json)
 
         { "access_token": "xxxxxx.xxxxxxx", "expires_in": 36000 }
