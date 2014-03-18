@@ -280,3 +280,43 @@ Clients can use this endpoint to delete the user identity information.
             Authorization: Bearer {access_token}
 
 + Response 204
+
+
+## Validate e-mail user  profile [/v1.0/user/me/validate]
+
+### E-mail user validate  [GET]
+Clients can use this endpoint to validate e-mail. 
+
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {one_access_token}
+
++ Response 200
+
+
+### E-mail user validate  [POST]
+Clients can use this endpoint to generate and send confirmation e-mail. 
+
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {access_token}
+
++ Response 200
+
+
+
+
