@@ -317,6 +317,25 @@ Clients can use this endpoint to generate and send confirmation e-mail.
 
 + Response 200
 
+## User password reset [/v1.0/passwordReset]
 
+
+### Password reset  [POST]
+Clients can use this endpoint to generate and send e-mail to change password. Requests must use [Basic HTTP Authentication](http://tools.ietf.org/html/rfc2617#section-2) to provide client_id and client_secret. For example:
+
+<pre style="margin: 22px 22px 22px 22px;">
+    Authorization: Basic xxxxxxxxxxxxx
+</pre>
+
++ Request (application/json)
+    + Header
+    
+            Authorization: Basic xxxxxxxxxxxxx
+
+    + Body
+    
+        { email: me-email@me.com }
+
++ Response 200
 
 
