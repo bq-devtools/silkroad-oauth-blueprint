@@ -296,14 +296,13 @@ Clients can use this endpoint to validate e-mail. Endpoint require one-time toke
 + Request
     + Header
     
-            Authorization: Bearer {one_access_token}
+            Authorization: Bearer {one_time_access_token}
 
 + Response 200
 
 
-### E-mail user validate  [POST]
+### Generate and send one-time token e-mail [POST]
 Clients can use this endpoint to generate and send confirmation e-mail. 
-
 
 ###Errors###
 |Status|Error|Description|
