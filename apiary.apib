@@ -327,6 +327,13 @@ Clients can use this endpoint to generate and send e-mail to change password. Re
     Authorization: Basic xxxxxxxxxxxxx
 </pre>
 
+###Parameters###
+The body of the request must contain a Json object with the following fields:
+
+|Name|Description|Type|Required|Restrictions|
+|----|-----------|----|:------:|:-----------|
+|email|Email of the user to reset|String|*|E-mail type|
+
 + Request (application/json)
     + Header
     
