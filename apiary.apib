@@ -287,24 +287,7 @@ Clients can use this endpoint to delete the user identity information.
 
 ## Validate e-mail user  profile [/v1.0/user/me/validate]
 
-### E-mail user validate  [GET]
-Clients can use this endpoint to validate e-mail. Endpoint require one-time token recived in e-mail user account.
-
-
-###Errors###
-|Status|Error|Description|
-|------|-----|-----------|
-|401   |unauthorized|If the *access token* can not be authorized.|
-
-+ Request
-    + Header
-    
-            Authorization: Bearer {one_time_access_token}
-
-+ Response 200
-
-
-### Generate and send one-time token e-mail [POST]
+### Generate and send one-time token e-mail [GET]
 Clients can use this endpoint to generate and send confirmation e-mail. 
 
 ###Errors###
@@ -319,22 +302,53 @@ Clients can use this endpoint to generate and send confirmation e-mail.
 
 + Response 200
 
+### E-mail user validate  [POST]
+Clients can use this endpoint to validate e-mail. Endpoint require one-time token recived in e-mail user account.
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {one_time_access_token}
+
++ Response 200
+
 ## User password reset [/v1.0/user/resetPassword]
 
 
-### Password reset  [POST]
+### Password reset  [GET]
 Clients can use this endpoint to generate and send e-mail to change password. Requests must use [Basic HTTP Authentication](http://tools.ietf.org/html/rfc2617#section-2) to provide client_id and client_secret. For example:
 
 <pre style="margin: 22px 22px 22px 22px;">
     Authorization: Basic xxxxxxxxxxxxx
 </pre>
 
-###Parameters###
-The body of the request must contain a Json object with the following fields:
+Also, clients must specify the account email, for example: /user/resetPassword?email=email@email.com
 
-|Name|Description|Type|Required|Restrictions|
-|----|-----------|----|:------:|:-----------|
-|email|Email of the user to reset|String|*|E-mail type|
++ Request
+    + Header
+    
+            Authorization: Basic xxxxxxxxxxxxx
+
++ Response 200
+
+### Password reset  [POST]
+
+Magement of user's profile in the oauth-server. All requests to the user enadpoint must include a valid *access token* via the **Authorization** header. For example:
+
+<pre style="margin: 22px 22px 22px 22px;">
+    Authorization: Bearer xxxxxx.xxxxxxx
+</pre>
+
+Also, clients must specify the account email, for example: /user/resetPassword?email=email@email.com
+
+|Name|Description|Type|Required
+|----|-----------|----|:------:|
+|password|New account password|JSON|*|
 
 + Request (application/json)
     + Header
@@ -342,9 +356,10 @@ The body of the request must contain a Json object with the following fields:
             Authorization: Basic xxxxxxxxxxxxx
 
     + Body
-    
-            { "email": "me-email@me.com" }
+        
+            { 
+                "password": "password"
+            }
 
 + Response 200
-
 
