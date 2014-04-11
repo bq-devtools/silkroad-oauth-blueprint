@@ -335,6 +335,11 @@ Clients can use this endpoint to generate and send e-mail to change password. Re
 |----|-----------|----|--------|-----------|
 |email|The existing email of the user|String|*|E-mail type|
 
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|404   |not_found|If the no user with the given email is found.|
+
 + Request
     + Header
     
