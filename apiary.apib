@@ -302,8 +302,10 @@ Clients can use this endpoint to generate and send confirmation e-mail.
 
 + Response 200
 
-### E-mail user validate  [POST]
-Clients can use this endpoint to validate e-mail. Endpoint require one-time token recived in e-mail user account.
+## Confirm user e-mail [/v1.0/user/me/confirmEmail]
+
+### Confrim Email  [PUT]
+Clients can use this endpoint to confirm their e-mail. Endpoint require one-time token recived in e-mail user account. Such email is can be request using the GET /v1.0/user/me/validate endpoint
 
 ###Errors###
 |Status|Error|Description|
@@ -317,7 +319,7 @@ Clients can use this endpoint to validate e-mail. Endpoint require one-time toke
 
 + Response 200
 
-## User password reset [/v1.0/user/resetPassword]
+## User password reset [/v1.0/user/resetPassword?email={email}]
 
 
 ### Password reset  [GET]
@@ -327,7 +329,11 @@ Clients can use this endpoint to generate and send e-mail to change password. Re
     Authorization: Basic xxxxxxxxxxxxx
 </pre>
 
-Also, clients must specify the account email, for example: /user/resetPassword?email=email@email.com
+###Parameters###
+
+|Name|Description|Type|Required|Restrictions|
+|----|-----------|----|--------|-----------|
+|email|The new email of the user|String|*|E-mail type|
 
 + Request
     + Header
@@ -336,30 +342,4 @@ Also, clients must specify the account email, for example: /user/resetPassword?e
 
 + Response 200
 
-### Password reset  [POST]
-
-Magement of user's profile in the oauth-server. All requests to the user enadpoint must include a valid *access token* via the **Authorization** header. For example:
-
-<pre style="margin: 22px 22px 22px 22px;">
-    Authorization: Bearer xxxxxx.xxxxxxx
-</pre>
-
-Also, clients must specify the account email, for example: /user/resetPassword?email=email@email.com
-
-|Name|Description|Type|Required
-|----|-----------|----|:------:|
-|password|New account password|JSON|*|
-
-+ Request (application/json)
-    + Header
-    
-            Authorization: Basic xxxxxxxxxxxxx
-
-    + Body
-        
-            { 
-                "password": "password"
-            }
-
-+ Response 200
 
