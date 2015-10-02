@@ -9,12 +9,16 @@ An user authentication system implemeting the [OAuth2](http://tools.ietf.org/htm
 ### Get login dialog [GET]
 Request the login page where the users can enter its credentials.
 
+###Version###
+
+Avaliable from version 0.12.0
+
 ###Parameters###
 |Name|Description|Type|Default|Required
 |----|-----------|----|:-----:|:------:|
 |client_id|The identifier of the client starting the oauth dance. This client_id and client_secret must be issued by the administration of the system .|String||*|
-|response_type|The type of response expected. Currently the only supported value is *code*.|String||*|
-|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||*|
+|response_type|The type of response expected. Support value is *code* or *token*.|String||*|
+|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||*  *code response*|
 |state|The state will remain after the redirect|String|||
 
 ###Errors###
@@ -89,7 +93,12 @@ Request the login page where the users can enter its credentials.
 ### Do login [POST]
 Non-web clients (e.g. Android) can submit user credentials directly without using the oauth-server's login dialog. Performing this POST request will be the same as presenting the login dialog to the user and she pressing the login button.
 
-POST header response return code "location: {redirect_uri}&code=xxxxxx.xxxxxx" 
+POST header response return code "location: {redirect_uri}&code=xxxxxx.xxxxxx" or OAuth Access Token (response_type)
+
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Parameters###
 |Name|Description|Type|Default|Required|
@@ -97,9 +106,15 @@ POST header response return code "location: {redirect_uri}&code=xxxxxx.xxxxxx"
 |username|User's username.|String||*|
 |password|User's password.|String||*|
 |client_id|The identifier of the client starting the oauth dance. This client_id and client_secret must be issued by the administration of the system .|String||*|
-|response_type|The type of response expected. Currently the only supported value is *code*.|String||*|
-|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||*|
+|response_type|The type of response expected. Support value is *code* or *token*. |String||*|
+|redirect_uri|The URI where to redirect the client when authentication process completes successfully.|String||* *code response*|
 |state|The state will remain after the redirect|String|||
+
+
+###Header###
+|Name|Description|Type|Default|Required
+|----|-----------|----|:-----:|:------:|
+|No-Redirect|If true, returns 200 with the header "Location" and the client should perform the redirection manualy. Else the request returns 303 to redirect to IAM.|Boolean|false||
 
 ###Errors###
 |Status|Error|Description|
@@ -121,6 +136,10 @@ POST header response return code "location: {redirect_uri}&code=xxxxxx.xxxxxx"
 After the client obtains a *code* using the oauth step described above. It can sent it to its backend. The server can the use this endpoint to exchange such *code* for and *access token*.
 
 ### Exchange code for access token [POST]
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Parameters###
 |Name|Description|Type|Default|Required
@@ -166,6 +185,10 @@ Create new users. Requests must use [Basic HTTP Authentication](http://tools.iet
 ### Create user [POST]
 Clients can use this endpoint to register new users.
 
+###Version###
+
+Avaliable from version 0.12.0
+
 ###Parameters###
 The body of the request must contain a Json object with the following fields:
 
@@ -198,15 +221,24 @@ The body of the request must contain a Json object with the following fields:
 
     + Response 201
 
-## User profile [/v1.0/user/me]
+## User profile [/v1.0/user/{id}]
 Magement of user's profile in the oauth-server. All requests to the user enadpoint must include a valid *access token* via the **Authorization** header. For example:
 
 <pre style="margin: 22px 22px 22px 22px;">
     Authorization: Bearer xxxxxx.xxxxxxx
 </pre>
 
+###Parameters###
+|Name|Description|Type|Required
+|----|-----------|----|:------:
+|id|User identification or me (me refers to actual user)|String|*
+
 ### Get user  [GET]
 Clients can use this endpoint to read the user information. 
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Response fields###
 |Name|Description|Type|Required|
@@ -237,15 +269,21 @@ Clients can use this endpoint to read the user information.
         }
 
 ### Update user [PUT]
-Clients can use this endpoint to update the user identity information. 
+Clients can use this endpoint to update the user information. 
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Parameters###
 The body of the request must contain a Json object including one or more of these fields
 
 |Name|Description|Type|Required|Restrictions|
 |----|-----------|----|--------|-----------|
-|password|The new password of the user|String|*|*|
-|email|The new email of the user|String|*|E-mail type|
+|password|The new password of the user|String||*|
+|username|The new username of the user|String||*|
+|email|The new email of the user|String||E-mail type|
+|role|The new role of the user|Role| |USER, ADMIN or ROOT|
 
 
 ###Errors###
@@ -270,7 +308,11 @@ The body of the request must contain a Json object including one or more of thes
 + Response 204
 
 ### Delete user [DELETE]
-Clients can use this endpoint to delete the user identity information. 
+Clients can use this endpoint to delete the user information. 
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Errors###
 |Status|Error|Description|
@@ -285,10 +327,19 @@ Clients can use this endpoint to delete the user identity information.
 + Response 204
 
 
-## Validate e-mail user  profile [/v1.0/user/me/validate]
+## Validate e-mail user  profile [/v1.0/user/{id}/validate]
 
 ### Generate and send one-time token e-mail [GET]
 Clients can use this endpoint to generate and send confirmation e-mail. 
+
+###Parameters###
+|Name|Description|Type|Required
+|----|-----------|----|:------:
+|id|User identification or me (me refers to actual user)|String|*
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Errors###
 |Status|Error|Description|
@@ -302,10 +353,19 @@ Clients can use this endpoint to generate and send confirmation e-mail.
 
 + Response 200
 
-## Confirm user e-mail [/v1.0/user/me/emailConfirmation]
+## Confirm user e-mail [/v1.0/user/{id}/emailConfirmation]
 
-### Confrim Email  [PUT]
+### Confirm Email  [PUT]
 Clients can use this endpoint to confirm their e-mail. Endpoint require one-time token recived in e-mail user account. Such email is can be request using the GET /v1.0/user/me/validate endpoint
+
+###Parameters###
+|Name|Description|Type|Required
+|----|-----------|----|:------:
+|id|User identification or me (me refers to actual user)|String|*
+
+###Version###
+
+Avaliable from version 0.12.0
 
 ###Errors###
 |Status|Error|Description|
@@ -324,6 +384,10 @@ Clients can use this endpoint to confirm their e-mail. Endpoint require one-time
 
 ### Password reset  [GET]
 Clients can use this endpoint to generate and send e-mail to change password. Requests must use [Basic HTTP Authentication](http://tools.ietf.org/html/rfc2617#section-2) to provide client_id and client_secret. For example:
+
+###Version###
+
+Avaliable from version 0.12.0
 
 <pre style="margin: 22px 22px 22px 22px;">
     Authorization: Basic xxxxxxxxxxxxx
@@ -347,4 +411,56 @@ Clients can use this endpoint to generate and send e-mail to change password. Re
 
 + Response 200
 
+## User Id through username [/v1.0/username/{name}]
+All requests to the username enadpoint must include a valid *access token* via the **Authorization** header. For example:
 
+<pre style="margin: 22px 22px 22px 22px;">
+    Authorization: Bearer xxxxxx.xxxxxxx
+</pre>
+
+###Parameters###
+|Name|Description|Type|Required
+|----|-----------|----|:------:
+|name|username of the user|String|*
+
+### Get user id  [GET]
+Clients can use this endpoint to obtain the user id. 
+
+###Version###
+
+Avaliable from version 1.24.0
+
+###Response fields###
+|Name|Description|Type|Required|
+|----|-----------|----|:------:|
+|id  |User identifier|String|*|
+
+
+
+###Errors###
+|Status|Error|Description|
+|------|-----|-----------|
+|401   |unauthorized|If the *access token* can not be authorized.|
+
++ Request
+    + Header
+    
+            Authorization: Bearer {access_token}
+
++ Response 200 (application/json)
+
+        { 
+            "id": "123"
+        }
+
+
+## Signout [/v1.0/oauth/signout]
+
+### Signout  [GET]
+Clients can use this endpoint to signout a logged user from the oauth-server. This will invalidate de session cookie that contains the session of the user.
+
+###Version###
+
+Avaliable from version 0.16.0
+
++ Response 204
